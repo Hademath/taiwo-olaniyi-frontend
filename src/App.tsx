@@ -17,7 +17,6 @@ import { PublicationEditorPage } from "./pages/owner/PublicationEditorPage";
 import { PublicationsPage } from "./pages/owner/PublicationsPage";
 import { SiteSettingsPage } from "./pages/owner/SiteSettingsPage";
 import { NotFoundPage } from "./pages/NotFoundPage";
-import { PublicAchievementsPage } from "./pages/public/PublicAchievementsPage";
 import { PublicArticlePage } from "./pages/public/PublicArticlePage";
 import { PublicFeedPage } from "./pages/public/PublicFeedPage";
 import { PublicPublicationsPage } from "./pages/public/PublicPublicationsPage";
@@ -67,33 +66,6 @@ const publicRoutes = [
       { path: "articles/:slug", element: <PublicArticlePage /> },
       { path: "publications", element: <PublicPublicationsPage /> },
       { path: "achievements", element: <PublicAchievementsPage /> },
-    ],
-  },
-  { path: "/owner-login", element: <OwnerLoginPage /> },
-  { path: "/forgot-password", element: <ForgotPasswordPage /> },
-  { path: "/reset-password", element: <ResetPasswordPage /> },
-  {
-    path: "/owner",
-    element: <RequireOwner />,
-    children: [
-      {
-        element: <OwnerLayout />,
-        children: [
-          { index: true, element: <DashboardPage /> },
-          { path: "posts", element: <PostsPage /> },
-          { path: "posts/new", element: <PostEditorPage /> },
-          { path: "posts/:id/edit", element: <PostEditorPage /> },
-          { path: "publications", element: <PublicationsPage /> },
-          { path: "publications/new", element: <PublicationEditorPage /> },
-          { path: "publications/:id/edit", element: <PublicationEditorPage /> },
-          { path: "achievements", element: <AchievementsPage /> },
-          { path: "achievements/new", element: <AchievementEditorPage /> },
-          { path: "achievements/:id/edit", element: <AchievementEditorPage /> },
-          { path: "comments", element: <CommentsPage /> },
-          { path: "settings", element: <SiteSettingsPage /> },
-          { path: "*", element: <NotFoundPage /> },
-        ],
-      },
     ],
   },
   { path: "*", element: <NotFoundPage /> },
