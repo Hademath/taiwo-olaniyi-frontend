@@ -47,7 +47,7 @@ export function OwnerLayout() {
     </aside>
     {menuOpen && <button className="scrim" aria-label="Close navigation" onClick={() => setMenuOpen(false)} />}
     <div className="workspace">
-      <header className="topbar"><button className="icon-button mobile-menu" aria-label="Open navigation" onClick={() => setMenuOpen(true)}><Menu size={19} /></button><div className="crumb"><span>Portfolio</span><span className="crumb-slash">/</span><strong>{title}</strong></div><label className="search-box"><Search size={16} /><input aria-label="Search writing" placeholder="Search your writing" value={searchText} onChange={(event) => setSearchText(event.target.value)} /><kbd>⌘ K</kbd></label><ThemeToggle /><Link className="site-link" to="/">View website <ArrowUpRight size={14} /></Link></header>
+      <header className="topbar"><button className="icon-button mobile-menu" aria-label="Open navigation" onClick={() => setMenuOpen(true)}><Menu size={19} /></button><div className="crumb"><span>Portfolio</span><span className="crumb-slash">/</span><strong>{title}</strong></div><label className="search-box"><Search size={16} /><input aria-label="Search writing" placeholder="Search your writing" value={searchText} onChange={(event) => setSearchText(event.target.value)} /><kbd>⌘ K</kbd></label><ThemeToggle /><a className="site-link" href={`${window.location.protocol}//${window.location.hostname.replace(/^admin\./, '')}`} target="_blank" rel="noreferrer">View website <ArrowUpRight size={14} /></a></header>
       <main className="page-content"><Outlet context={{ searchText }} /></main>
       <footer className="footer"><span>© {currentYear} The Written Record</span><span>Writing, research, and ideas in the open.</span></footer>
     </div>
