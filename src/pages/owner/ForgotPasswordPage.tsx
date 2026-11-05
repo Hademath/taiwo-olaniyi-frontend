@@ -39,7 +39,7 @@ export function ForgotPasswordPage() {
               </div>
               <h2 style={{ margin: "0 0 10px", fontFamily: "'Newsreader', serif", fontSize: 28, fontWeight: 500 }}>Check your email</h2>
               <p style={{ margin: "0 0 24px", color: "var(--muted)", fontSize: 11, lineHeight: 1.75 }}>
-                If <strong>{email}</strong> is registered, a reset token has been sent. Check your inbox. If you are running locally, check <code style={{ fontSize: 10, background: "var(--pale)", padding: "1px 5px", borderRadius: 4 }}>storage/logs/laravel.log</code>.
+                If <strong>{email}</strong> is registered, a reset token has been sent. Check your inbox.
               </p>
               <Link to={`/reset-password?email=${encodeURIComponent(email)}`} className="button button-primary button-wide" style={{ display: "inline-flex" }}>
                 I have my token <ArrowUpRight size={15} />
