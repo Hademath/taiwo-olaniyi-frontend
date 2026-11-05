@@ -1,0 +1,41 @@
+name: Deploy Frontend to Production
+
+on:
+  push:
+    branches: [v1]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Build & Deploy → Namecheap
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+        env:
+          VITE_API_URL: https://api.taiwoolaniyi.com/api/v1
+
+      - name: Deploy dist to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host:     ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key:      ${{ secrets.SSH_PRIVATE_KEY }}
+          port:     21098
+          source:   dist/*
+          target:   ~/taiwoolaniyi.com
+          strip_components: 1
