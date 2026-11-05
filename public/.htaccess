@@ -2,11 +2,6 @@ Options -Indexes
 RewriteEngine On
 RewriteBase /
 
-# Redirect admin subdomain root → owner login
-RewriteCond %{HTTP_HOST} ^admin\. [NC]
-RewriteCond %{REQUEST_URI} ^/$
-RewriteRule ^ /owner-login [R=301,L]
-
 # Serve existing files and directories directly
 RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d
