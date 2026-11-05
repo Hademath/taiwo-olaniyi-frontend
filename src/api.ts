@@ -65,7 +65,6 @@ export const postsApi = {
 export const publicationsApi = {
   publicList: (page = 1) => api.get<Paginated<Publication>>("/publications", { params: { page } }).then((r) => r.data),
   publicGet: (id: string) => api.get<{ data: Publication }>(`/publications/${id}`).then((r) => r.data.data),
-  list: () => api.get<Paginated<Publication>>("/admin/publications").then((r) => r.data),
   get: (id: string) => api.get<{ data: Publication }>(`/admin/publications/${id}`).then((r) => r.data.data),
   list: (status?: "draft" | "published") => api.get<Paginated<Publication>>("/admin/publications", { params: status ? { status } : {} }).then((r) => r.data),
   create: (input: PublicationInput) => api.post<{ data: Publication }>("/admin/publications", input).then((r) => r.data.data),

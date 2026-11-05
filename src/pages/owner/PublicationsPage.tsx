@@ -6,7 +6,6 @@ import { Link } from "react-router-dom";
 import { publicationsApi } from "../../api";
 import { ConfirmModal } from "../../components/ConfirmModal";
 import { PageHeading } from "../../components/PageHeading";
-import { StatusPill } from "../../components/StatusPill";
 import { EmptyState, ErrorState, LoadingState } from "../../components/StateViews";
 import { stripHtml, formatDate } from "../../lib/format";
 import { messageFor } from "../../lib/format";
