@@ -17,6 +17,7 @@ import { PublicationEditorPage } from "./pages/owner/PublicationEditorPage";
 import { PublicationsPage } from "./pages/owner/PublicationsPage";
 import { SiteSettingsPage } from "./pages/owner/SiteSettingsPage";
 import { NotFoundPage } from "./pages/NotFoundPage";
+import { PublicAchievementsPage } from "./pages/public/PublicAchievementsPage";
 import { PublicArticlePage } from "./pages/public/PublicArticlePage";
 import { PublicFeedPage } from "./pages/public/PublicFeedPage";
 import { PublicPublicationsPage } from "./pages/public/PublicPublicationsPage";
