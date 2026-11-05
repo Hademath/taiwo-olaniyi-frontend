@@ -24,7 +24,41 @@ import { PublicPublicationsPage } from "./pages/public/PublicPublicationsPage";
 
 const queryClient = new QueryClient({ defaultOptions: { queries: { staleTime: 30_000, retry: 1 } } });
 
-const router = createBrowserRouter([
+const isAdminSubdomain = window.location.hostname.startsWith("admin.");
+
+const ownerRoutes = [
+  { path: "/", element: <OwnerLoginPage /> },
+  { path: "/owner-login", element: <OwnerLoginPage /> },
+  { path: "/forgot-password", element: <ForgotPasswordPage /> },
+  { path: "/reset-password", element: <ResetPasswordPage /> },
+  {
+    path: "/owner",
+    element: <RequireOwner />,
+    children: [
+      {
+        element: <OwnerLayout />,
+        children: [
+          { index: true, element: <DashboardPage /> },
+          { path: "posts", element: <PostsPage /> },
+          { path: "posts/new", element: <PostEditorPage /> },
+          { path: "posts/:id/edit", element: <PostEditorPage /> },
+          { path: "publications", element: <PublicationsPage /> },
+          { path: "publications/new", element: <PublicationEditorPage /> },
+          { path: "publications/:id/edit", element: <PublicationEditorPage /> },
+          { path: "achievements", element: <AchievementsPage /> },
+          { path: "achievements/new", element: <AchievementEditorPage /> },
+          { path: "achievements/:id/edit", element: <AchievementEditorPage /> },
+          { path: "comments", element: <CommentsPage /> },
+          { path: "settings", element: <SiteSettingsPage /> },
+          { path: "*", element: <NotFoundPage /> },
+        ],
+      },
+    ],
+  },
+  { path: "*", element: <NotFoundPage /> },
+];
+
+const publicRoutes = [
   {
     path: "/",
     element: <PublicLayout />,
@@ -63,7 +97,9 @@ const router = createBrowserRouter([
     ],
   },
   { path: "*", element: <NotFoundPage /> },
-]);
+];
+
+const router = createBrowserRouter(isAdminSubdomain ? ownerRoutes : publicRoutes);
 
 export default function App() {
   return <QueryClientProvider client={queryClient}><RouterProvider router={router} /><Toaster position="top-right" toastOptions={{ duration: 3500 }} /></QueryClientProvider>;
