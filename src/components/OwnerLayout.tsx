@@ -1,7 +1,7 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Activity, ArrowUpRight, BookMarked, FileText, LogOut, Menu, MessageCircle, Search, Settings, ShieldCheck, Trophy, X } from "lucide-react";
 import { useState } from "react";
-import { Link, NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { authApi, postsApi } from "../api";
 import { useAuthStore } from "../auth";
 import { Brand } from "./Brand";
