@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { ExternalLink } from "lucide-react";
+import { Helmet } from "react-helmet-async";
 import { publicationsApi } from "../../api";
 import { LoadingState } from "../../components/StateViews";
 import { messageFor } from "../../lib/format";
@@ -24,6 +25,14 @@ export function PublicPublicationsPage() {
 
   return (
     <main className="public-main">
+      <Helmet>
+        <title>Publications | Olaniyi Taiwo, PhD — The Written Record</title>
+        <meta name="description" content="Peer-reviewed articles, book chapters, and scholarly research by Olaniyi Taiwo, PhD — scholar of English literature, language studies, and literary theory." />
+        <link rel="canonical" href="https://olaniyitaiwo.com/publications" />
+        <meta property="og:title" content="Publications | Olaniyi Taiwo, PhD" />
+        <meta property="og:description" content="Peer-reviewed articles, book chapters, and scholarly research by Olaniyi Taiwo, PhD." />
+        <meta property="og:url" content="https://olaniyitaiwo.com/publications" />
+      </Helmet>
       <div className="pub-page-wrap">
         <p className="public-kicker">RESEARCH</p>
         <h1 className="pub-page-title">Publications</h1>
@@ -61,7 +70,7 @@ function PublicationCard({ pub }: { pub: Publication }) {
           </div>
           <p className="pub-card-title">{pub.title}</p>
           {pub.publisher && <p className="pub-card-publisher">{pub.publisher}</p>}
-          {pub.abstract && <p className="pub-card-abstract">{pub.abstract}</p>}
+          {pub.abstract && <div className="pub-card-abstract" dangerouslySetInnerHTML={{ __html: pub.abstract }} />}
         </div>
         {pub.url && (
           <a href={pub.url} target="_blank" rel="noreferrer" className="button button-outline button-small pub-card-link">

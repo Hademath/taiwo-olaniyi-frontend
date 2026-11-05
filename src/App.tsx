@@ -15,6 +15,7 @@ import { PostEditorPage } from "./pages/owner/PostEditorPage";
 import { PostsPage } from "./pages/owner/PostsPage";
 import { PublicationEditorPage } from "./pages/owner/PublicationEditorPage";
 import { PublicationsPage } from "./pages/owner/PublicationsPage";
+import { SiteSettingsPage } from "./pages/owner/SiteSettingsPage";
 import { NotFoundPage } from "./pages/NotFoundPage";
 import { PublicAchievementsPage } from "./pages/public/PublicAchievementsPage";
 import { PublicArticlePage } from "./pages/public/PublicArticlePage";
@@ -55,6 +56,7 @@ const router = createBrowserRouter([
           { path: "achievements/new", element: <AchievementEditorPage /> },
           { path: "achievements/:id/edit", element: <AchievementEditorPage /> },
           { path: "comments", element: <CommentsPage /> },
+          { path: "settings", element: <SiteSettingsPage /> },
           { path: "*", element: <NotFoundPage /> },
         ],
       },

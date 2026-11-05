@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { Helmet } from "react-helmet-async";
 import { achievementsApi } from "../../api";
 import { LoadingState } from "../../components/StateViews";
 import { messageFor } from "../../lib/format";
@@ -28,6 +29,14 @@ export function PublicAchievementsPage() {
 
   return (
     <main className="public-main">
+      <Helmet>
+        <title>Achievements & Recognition | Olaniyi Taiwo, PhD — The Written Record</title>
+        <meta name="description" content="Awards, fellowships, grants, and professional recognitions received by Olaniyi Taiwo, PhD — scholar of English literature and language studies." />
+        <link rel="canonical" href="https://olaniyitaiwo.com/achievements" />
+        <meta property="og:title" content="Achievements | Olaniyi Taiwo, PhD" />
+        <meta property="og:description" content="Awards, fellowships, and professional recognitions of Olaniyi Taiwo, PhD." />
+        <meta property="og:url" content="https://olaniyitaiwo.com/achievements" />
+      </Helmet>
       <div className="pub-page-wrap">
         <p className="public-kicker">RECOGNITION</p>
         <h1 className="pub-page-title">Achievements</h1>
@@ -52,7 +61,7 @@ export function PublicAchievementsPage() {
                           <div className="ach-row-body">
                             <p className="ach-row-title">{ach.title}</p>
                             {ach.institution && <p className="ach-row-institution">{ach.institution}</p>}
-                            {ach.description && <p className="ach-row-desc">{ach.description}</p>}
+                            {ach.description && <div className="ach-row-desc" dangerouslySetInnerHTML={{ __html: ach.description }} />}
                           </div>
                         </div>
                       ))}

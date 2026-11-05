@@ -1,11 +1,14 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft } from "lucide-react";
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { achievementsApi } from "../../api";
+import { RichTextEditor } from "../../components/RichTextEditor";
 import { messageFor } from "../../lib/format";
 import type { AchievementInput, AchievementType } from "../../types";
+
+const MarkdownBody = lazy(() => import("../../MarkdownBody"));
 
 const TYPES: { value: AchievementType; label: string }[] = [
   { value: "award", label: "Award" },
@@ -28,6 +31,7 @@ export function AchievementEditorPage() {
   const [institution, setInstitution] = useState("");
   const [year, setYear] = useState("");
   const [description, setDescription] = useState("");
+  const [preview, setPreview] = useState(false);
 
   useEffect(() => {
     if (existing.data) {
@@ -67,6 +71,9 @@ export function AchievementEditorPage() {
         <span className="editor-separator">/</span>
         <span>{isEdit ? "Edit achievement" : "Add achievement"}</span>
         <div className="editor-actions">
+          <button className="button button-quiet" type="button" onClick={() => setPreview(!preview)}>
+            {preview ? "Edit" : "Preview"}
+          </button>
           <Link to="/owner/achievements" className="button button-outline button-small">Cancel</Link>
           <button className="button button-primary button-small" disabled={save.isPending || !title.trim()} onClick={() => save.mutate()}>
             {save.isPending ? "Saving…" : isEdit ? "Save changes" : "Add achievement"}
@@ -75,33 +82,34 @@ export function AchievementEditorPage() {
       </div>
 
       <div className="editor-layout" style={{ gridTemplateColumns: "minmax(0, 1fr) 240px" }}>
-        <div className="editor-main">
-          <label className="field-label" style={{ marginBottom: 16 }}>
-            Title
-            <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Name of the award, grant, or fellowship" required />
-          </label>
-          <label className="field-label">
-            Description
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Brief description…"
-              rows={6}
-              style={{ width: "100%", resize: "vertical", border: "1px solid var(--border)", borderRadius: 6, outline: 0, color: "var(--ink)", background: "#fbfcfd", padding: 10, fontSize: 11, lineHeight: 1.65 }}
-            />
-          </label>
-        </div>
+        {preview ? (
+          <div className="preview-article">
+            <p className="eyebrow">ACHIEVEMENT PREVIEW</p>
+            <h1>{title || "Untitled achievement"}</h1>
+            {institution && <p className="preview-publisher">{institution}{year ? `, ${year}` : ""}</p>}
+            {description && <Suspense fallback={null}><MarkdownBody body={description} /></Suspense>}
+          </div>
+        ) : (
+          <div className="editor-main">
+            <label className="field-label" style={{ marginBottom: 16 }}>
+              Title
+              <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Name of the award, grant, or fellowship" required />
+            </label>
+            <div>
+              <p className="body-label">DESCRIPTION <span>Rich text supported</span></p>
+              <div className="compact-editor">
+                <RichTextEditor value={description} onChange={setDescription} placeholder="Brief description of this achievement…" />
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="editor-aside">
           <div className="aside-card">
             <h3>Details</h3>
             <label className="field-label compact-label">
               Type
-              <select
-                value={type}
-                onChange={(e) => setType(e.target.value as AchievementType)}
-                style={{ width: "100%", height: 34, border: "1px solid var(--border)", borderRadius: 6, outline: 0, color: "var(--ink)", background: "#fbfcfd", padding: "0 8px", fontSize: 10 }}
-              >
+              <select value={type} onChange={(e) => setType(e.target.value as AchievementType)} className="field-select">
                 {TYPES.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
               </select>
             </label>

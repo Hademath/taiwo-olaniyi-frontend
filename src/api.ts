@@ -1,5 +1,5 @@
 import axios, { type AxiosError, type InternalAxiosRequestConfig } from "axios";
-import type { Achievement, AchievementInput, AuthSession, Comment, Paginated, Post, PostInput, PostStatus, Publication, PublicationInput, PublicComment } from "./types";
+import type { Achievement, AchievementInput, AuthSession, Comment, Paginated, Post, PostInput, PostStatus, Publication, PublicationInput, PublicComment, SiteSetting } from "./types";
 import { useAuthStore } from "./auth";
 
 const baseURL = import.meta.env.VITE_API_URL ?? "http://localhost:8000/api/v1";
@@ -67,8 +67,10 @@ export const publicationsApi = {
   publicGet: (id: string) => api.get<{ data: Publication }>(`/publications/${id}`).then((r) => r.data.data),
   list: () => api.get<Paginated<Publication>>("/admin/publications").then((r) => r.data),
   get: (id: string) => api.get<{ data: Publication }>(`/admin/publications/${id}`).then((r) => r.data.data),
+  list: (status?: "draft" | "published") => api.get<Paginated<Publication>>("/admin/publications", { params: status ? { status } : {} }).then((r) => r.data),
   create: (input: PublicationInput) => api.post<{ data: Publication }>("/admin/publications", input).then((r) => r.data.data),
   update: (id: string, input: Partial<PublicationInput>) => api.patch<{ data: Publication }>(`/admin/publications/${id}`, input).then((r) => r.data.data),
+  updateStatus: (id: string, status: "draft" | "published") => api.patch<{ data: Publication }>(`/admin/publications/${id}/status`, { status }).then((r) => r.data.data),
   remove: (id: string) => api.delete(`/admin/publications/${id}`),
 };
 
@@ -80,4 +82,13 @@ export const achievementsApi = {
   create: (input: AchievementInput) => api.post<{ data: Achievement }>("/admin/achievements", input).then((r) => r.data.data),
   update: (id: string, input: Partial<AchievementInput>) => api.patch<{ data: Achievement }>(`/admin/achievements/${id}`, input).then((r) => r.data.data),
   remove: (id: string) => api.delete(`/admin/achievements/${id}`),
+};
+
+export const siteSettingsApi = {
+  publicGet: () => api.get<{ data: SiteSetting }>("/settings").then((r) => r.data.data),
+  get: () => api.get<{ data: SiteSetting }>("/admin/settings").then((r) => r.data.data),
+  update: (data: FormData | Record<string, string | null>) =>
+    api.post<{ data: SiteSetting }>("/admin/settings", data, {
+      headers: data instanceof FormData ? { "Content-Type": "multipart/form-data" } : {},
+    }).then((r) => r.data.data),
 };

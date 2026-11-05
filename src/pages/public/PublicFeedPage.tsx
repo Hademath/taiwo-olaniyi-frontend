@@ -1,8 +1,8 @@
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { ArrowDown, ArrowRight, ArrowUpRight, ExternalLink } from "lucide-react";
+import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
-// ArrowUpRight still used in section links and featured note
-import { achievementsApi, postsApi, publicationsApi } from "../../api";
+import { achievementsApi, postsApi, publicationsApi, siteSettingsApi } from "../../api";
 import { PublicPostCard } from "../../components/PublicPostCard";
 import { LoadingState } from "../../components/StateViews";
 import { messageFor } from "../../lib/format";
@@ -28,11 +28,14 @@ export function PublicFeedPage() {
   });
   const pubsQuery = useQuery({ queryKey: ["public-publications-preview"], queryFn: () => publicationsApi.publicList(), staleTime: 60_000 });
   const achsQuery = useQuery({ queryKey: ["public-achievements-preview"], queryFn: () => achievementsApi.publicList(), staleTime: 60_000 });
+  const settingsQuery = useQuery({ queryKey: ["public-site-settings"], queryFn: siteSettingsApi.publicGet, staleTime: 300_000 });
 
   const posts = feed.data?.pages.flatMap((page) => page.data) ?? [];
   const featured = posts[0];
-  const heroStyle = featured?.cover_image_url
-    ? { backgroundImage: `linear-gradient(90deg, rgb(15 25 60 / .9), rgb(15 25 60 / .48) 58%, rgb(15 25 60 / .15)), url("${featured.cover_image_url}")` }
+  const settings = settingsQuery.data;
+  const bannerImg = settings?.hero_image_url;
+  const heroStyle = bannerImg
+    ? { backgroundImage: `linear-gradient(90deg, rgb(15 25 60 / .88), rgb(15 25 60 / .44) 55%, rgb(15 25 60 / .1)), url("${bannerImg}")` }
     : undefined;
 
   const recentPubs = pubsQuery.data?.data.slice(0, 3) ?? [];
@@ -40,12 +43,19 @@ export function PublicFeedPage() {
 
   return (
     <main className="public-main">
-      <section className={`public-hero ${featured?.cover_image_url ? "public-hero-image" : ""}`} style={heroStyle}>
+      <Helmet>
+        <title>The Written Record | Olaniyi Taiwo, PhD — Scholar in English Literature</title>
+        <meta name="description" content="The scholarly portfolio of Olaniyi Taiwo, PhD — literary critic, essayist, and researcher in English literature, language studies, and literary theory. Essays, publications, and academic research." />
+        <link rel="canonical" href="https://olaniyitaiwo.com/" />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://olaniyitaiwo.com/" />
+      </Helmet>
+      <section className={`public-hero ${bannerImg ? "public-hero-image" : ""}`} style={heroStyle}>
         <div className="public-hero-copy">
           <p className="public-kicker"><span /> AN ACADEMIC PORTFOLIO</p>
-          <h1>Language, Literature,<br />and the <em>power of ideas.</em></h1>
-          <p>Essays, scholarship, and writing from a career in English literature and language.</p>
-          <a className="public-hero-link" href="#writing">Explore the portfolio <ArrowDown size={16} /></a>
+          <h1 dangerouslySetInnerHTML={{ __html: (settings?.hero_title ?? "Language, Literature, and the power of ideas.").replace(/\band\b/, "and<br />") }} />
+          {settings?.hero_subtitle && <p>{settings.hero_subtitle}</p>}
+          <a className="public-hero-link" href="#writing">{settings?.hero_cta ?? "Explore the portfolio"} <ArrowDown size={16} /></a>
         </div>
         {featured && (
           <Link to={`/articles/${featured.slug}`} className="public-featured-note">

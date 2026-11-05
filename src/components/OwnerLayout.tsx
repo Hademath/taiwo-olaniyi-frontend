@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Activity, ArrowUpRight, BookMarked, FileText, LogOut, Menu, MessageCircle, Search, ShieldCheck, Trophy, X } from "lucide-react";
+import { Activity, ArrowUpRight, BookMarked, FileText, LogOut, Menu, MessageCircle, Search, Settings, ShieldCheck, Trophy, X } from "lucide-react";
 import { useState } from "react";
 import { Link, NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { authApi, postsApi } from "../api";
@@ -13,6 +13,7 @@ const navigation = [
   { to: "/owner/publications", label: "Publications", icon: BookMarked },
   { to: "/owner/achievements", label: "Achievements", icon: Trophy },
   { to: "/owner/comments", label: "Comments", icon: MessageCircle },
+  { to: "/owner/settings", label: "Site", icon: Settings },
 ];
 const currentYear = new Date().getFullYear();
 
@@ -24,7 +25,7 @@ export function OwnerLayout() {
   const location = useLocation();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const title = location.pathname.startsWith("/owner/comments") ? "Comments" : location.pathname.includes("/edit") || location.pathname.includes("/new") ? "Write an article" : location.pathname.startsWith("/owner/posts") ? "Writing" : "Overview";
+  const title = location.pathname.startsWith("/owner/settings") ? "Site Settings" : location.pathname.startsWith("/owner/comments") ? "Comments" : location.pathname.startsWith("/owner/achievements") ? "Achievements" : location.pathname.startsWith("/owner/publications") ? "Publications" : location.pathname.includes("/edit") || location.pathname.includes("/new") ? "Write an article" : location.pathname.startsWith("/owner/posts") ? "Writing" : "Overview";
 
   async function signOut() {
     try { await authApi.logout(); } catch { /* Clear local auth even if the API is unavailable. */ }

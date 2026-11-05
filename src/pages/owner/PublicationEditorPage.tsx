@@ -1,11 +1,14 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft } from "lucide-react";
-import { useEffect, useState } from "react";
+import { ArrowLeft, ExternalLink } from "lucide-react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { publicationsApi } from "../../api";
+import { RichTextEditor } from "../../components/RichTextEditor";
 import { messageFor } from "../../lib/format";
-import type { PublicationInput, PublicationType } from "../../types";
+import type { PublicationInput, PublicationType, PublicationStatus } from "../../types";
+
+const MarkdownBody = lazy(() => import("../../MarkdownBody"));
 
 const TYPES: { value: PublicationType; label: string }[] = [
   { value: "article", label: "Journal Article" },
@@ -30,6 +33,8 @@ export function PublicationEditorPage() {
   const [year, setYear] = useState("");
   const [url, setUrl] = useState("");
   const [abstract, setAbstract] = useState("");
+  const [status, setStatus] = useState<PublicationStatus>("published");
+  const [preview, setPreview] = useState(false);
 
   useEffect(() => {
     if (existing.data) {
@@ -39,6 +44,7 @@ export function PublicationEditorPage() {
       setYear(existing.data.year ? String(existing.data.year) : "");
       setUrl(existing.data.url ?? "");
       setAbstract(existing.data.abstract ?? "");
+      setStatus(existing.data.status ?? "published");
     }
   }, [existing.data]);
 
@@ -51,6 +57,7 @@ export function PublicationEditorPage() {
         year: year ? Number(year) : null,
         url: url.trim() || undefined,
         abstract: abstract.trim() || undefined,
+        status,
       };
       return isEdit ? publicationsApi.update(id!, input) : publicationsApi.create(input);
     },
@@ -71,6 +78,9 @@ export function PublicationEditorPage() {
         <span className="editor-separator">/</span>
         <span>{isEdit ? "Edit publication" : "Add publication"}</span>
         <div className="editor-actions">
+          <button className="button button-quiet" type="button" onClick={() => setPreview(!preview)}>
+            {preview ? "Edit" : "Preview"}
+          </button>
           <Link to="/owner/publications" className="button button-outline button-small">Cancel</Link>
           <button className="button button-primary button-small" disabled={save.isPending || !title.trim()} onClick={() => save.mutate()}>
             {save.isPending ? "Saving…" : isEdit ? "Save changes" : "Add publication"}
@@ -79,37 +89,68 @@ export function PublicationEditorPage() {
       </div>
 
       <div className="editor-layout" style={{ gridTemplateColumns: "minmax(0, 1fr) 240px" }}>
-        <div className="editor-main">
-          <label className="field-label" style={{ marginBottom: 16 }}>
-            Title
-            <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Full title of the work" required />
-          </label>
-          <label className="field-label" style={{ marginBottom: 16 }}>
-            Abstract / Description
-            <textarea
-              value={abstract}
-              onChange={(e) => setAbstract(e.target.value)}
-              placeholder="Brief abstract or description…"
-              rows={6}
-              style={{ width: "100%", resize: "vertical", border: "1px solid var(--border)", borderRadius: 6, outline: 0, color: "var(--ink)", background: "#fbfcfd", padding: "10px", fontSize: 11, lineHeight: 1.65 }}
-            />
-          </label>
-          <label className="field-label">
-            URL
-            <input type="url" value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://doi.org/…" />
-          </label>
-        </div>
+        {preview ? (
+          <div className="preview-article">
+            <p className="eyebrow">PUBLICATION PREVIEW</p>
+            <h1>{title || "Untitled publication"}</h1>
+            {publisher && <p className="preview-publisher">{publisher}{year ? `, ${year}` : ""}</p>}
+            {url && <a href={url} target="_blank" rel="noreferrer" className="preview-pub-link"><ExternalLink size={14} /> View publication</a>}
+            {abstract && <Suspense fallback={null}><MarkdownBody body={abstract} /></Suspense>}
+          </div>
+        ) : (
+          <div className="editor-main">
+            <label className="field-label" style={{ marginBottom: 16 }}>
+              Title
+              <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Full title of the work" required />
+            </label>
+            <div style={{ marginBottom: 16 }}>
+              <p className="body-label">ABSTRACT / DESCRIPTION <span>Rich text supported</span></p>
+              <div className="compact-editor">
+                <RichTextEditor value={abstract} onChange={setAbstract} placeholder="Brief abstract or description of this work…" />
+              </div>
+            </div>
+            <label className="field-label">
+              URL
+              <input type="url" value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://doi.org/…" />
+            </label>
+          </div>
+        )}
 
         <div className="editor-aside">
+          <div className="aside-card">
+            <h3>Visibility</h3>
+            <div className="segmented" role="group" aria-label="Publication status" style={{ width: "100%" }}>
+              <button
+                type="button"
+                role="radio"
+                aria-checked={status === "published"}
+                className={status === "published" ? "segment-active" : ""}
+                style={{ flex: 1 }}
+                onClick={() => setStatus("published")}
+              >
+                Published
+              </button>
+              <button
+                type="button"
+                role="radio"
+                aria-checked={status === "draft"}
+                className={status === "draft" ? "segment-active" : ""}
+                style={{ flex: 1 }}
+                onClick={() => setStatus("draft")}
+              >
+                Draft
+              </button>
+            </div>
+            <p style={{ margin: "4px 0 0", color: "var(--muted)", fontSize: 9 }}>
+              {status === "published" ? "Visible to everyone on your site." : "Only visible to you."}
+            </p>
+          </div>
+
           <div className="aside-card">
             <h3>Details</h3>
             <label className="field-label compact-label">
               Type
-              <select
-                value={type}
-                onChange={(e) => setType(e.target.value as PublicationType)}
-                style={{ width: "100%", height: 34, border: "1px solid var(--border)", borderRadius: 6, outline: 0, color: "var(--ink)", background: "#fbfcfd", padding: "0 8px", fontSize: 10 }}
-              >
+              <select value={type} onChange={(e) => setType(e.target.value as PublicationType)} className="field-select">
                 {TYPES.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
               </select>
             </label>
